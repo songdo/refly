@@ -1,0 +1,85 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_displayName__",
+  "description": "__MSG_description__",
+  "version": "0.3.6",
+  "icons": {
+    "16": "icon/16.png",
+    "32": "icon/32.png",
+    "48": "icon/48.png",
+    "64": "icon/64.png",
+    "128": "icon/128.png"
+  },
+  "author": "support@refly.ai",
+  "default_locale": "en",
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*",
+    "<all_urls>",
+    "http://localhost/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' http://localhost:4000; object-src 'self';",
+    "sandbox": "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:4000; sandbox allow-scripts allow-forms allow-popups allow-modals; child-src 'self';"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlkdw0WXN0WT9YYu1nsWezZzSmWrGpny4gK0UhiL7nbz2NQkqq32KsW51Ag3wdvD/ccyS5VUUEnnlAwxmk0CfnO+TNEFM5lCtF+1/2j5HpmlqZMUlu3tUx+SiY3mF6R9cpbfts3IjWomuRVMfHXmWEu3Gctv4T5hSTNKd44Z3SOPj5KeUxYryJmL/y8LR6lj9F/a5Gfblf5t214GKeFXjewgQOmAGT+v5NurIu3xuwPkYqmkrNcRrQHqkdREH4AFp4TjlNpx5W+AR6Qh9FRkGjXTlcVMQ62KqPlIV29Y/VTO/4oUVhPMhVxXH91ojoA7Vzgr76OtnjaysNZbBapxgFQIDAQAB",
+  "externally_connectable": {
+    "matches": [
+      "https://refly.ai/*",
+      "https://api.refly.ai/*",
+      "https://www.refly.ai/*",
+      "http://localhost:5173/*"
+    ]
+  },
+  "homepage_url": "https://refly.ai",
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab",
+    "tabs",
+    "cookies",
+    "clipboardRead",
+    "clipboardWrite"
+  ],
+  "commands": {
+    "wxt:reload-extension": {
+      "description": "Reload the extension during development",
+      "suggested_key": {
+        "default": "Alt+R"
+      }
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "The Open Source Vibe Workflow Platform · Refly",
+    "default_popup": "popup.html"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "content-scripts/contentSelector-csui.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/floatingSphere-csui.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/utils-csui.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}
