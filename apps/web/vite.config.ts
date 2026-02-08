@@ -80,6 +80,10 @@ export default defineConfig(({ mode }) => {
           secure: false,
         },
       },
+      allowedHosts: ['test2'],
+    },
+    preview: {
+      allowedHosts: ['test2'],
     },
   } as UserConfig;
 });

@@ -22,7 +22,7 @@ export class UserService implements OnModuleInit {
 
   constructor(
     private config: ConfigService,
-    private prisma: PrismaService,
+    private prisma: PrismaService, // 注入 PrismaService
     private redis: RedisService,
     private miscService: MiscService,
     private subscriptionService: SubscriptionService,
@@ -30,6 +30,7 @@ export class UserService implements OnModuleInit {
 
   async onModuleInit() {
     if (isDesktop()) {
+      // 检查并创建本地用户
       const localUid = this.config.get('local.uid');
       const localUser = await this.prisma.user.findUnique({
         where: { uid: localUid },
