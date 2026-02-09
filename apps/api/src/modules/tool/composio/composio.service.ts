@@ -55,6 +55,14 @@ export class ComposioService {
   async authApp(user: User, appSlug: string) {
     try {
       this.logger.log(`Initiating connection for user ${user.uid}, app: ${appSlug}`);
+
+      // Check if composio client is initialized
+      if (!this.composio) {
+        throw new Error(
+          'Composio integration is not configured. Please set COMPOSIO_API_KEY environment variable.',
+        );
+      }
+
       // use composio to authorize user with redirect URL
       const connectionRequest = await this.composio.toolkits.authorize(user.uid, appSlug);
       this.logger.log(`OAuth URL generated: ${connectionRequest.redirectUrl}`);
@@ -66,6 +74,14 @@ export class ComposioService {
       };
     } catch (error) {
       this.logger.error(`Failed to initiate connection: ${error.message}`, error.stack);
+
+      // Provide more helpful error message for unknown toolkits
+      if (error.message.includes("Couldn't fetch Toolkit with slug")) {
+        throw new Error(
+          `Toolkit "${appSlug}" not found in Composio. Please check if this toolkit exists in your Composio account or contact support.`,
+        );
+      }
+
       throw error;
     }
   }
@@ -180,6 +196,11 @@ export class ComposioService {
    * @param integrationId - The integration/toolkit ID
    */
   async fetchTools(userId: string, integrationId: string, limit = 100): Promise<any[]> {
+    if (!this.composio) {
+      throw new Error(
+        'Composio integration is not configured. Please set COMPOSIO_API_KEY environment variable.',
+      );
+    }
     const tools = await this.composio.tools.get(userId, {
       toolkits: [integrationId],
       limit,
@@ -200,6 +221,11 @@ export class ComposioService {
     toolName: string,
     input: Record<string, unknown>,
   ): Promise<ToolExecuteResponse> {
+    if (!this.composio) {
+      throw new Error(
+        'Composio integration is not configured. Please set COMPOSIO_API_KEY environment variable.',
+      );
+    }
     return await this.composio.tools.execute(toolName, {
       userId,
       connectedAccountId,
@@ -220,6 +246,10 @@ export class ComposioService {
     integrationId: string;
   } | null> {
     try {
+      if (!this.composio) {
+        return null;
+      }
+
       const connectedAccounts = await this.composio.connectedAccounts.list({
         userIds: [user.uid],
       });
@@ -449,6 +479,12 @@ export class ComposioService {
     this.logger.log(`Creating auth config for ${integrationId}`);
 
     try {
+      if (!this.composio) {
+        throw new Error(
+          'Composio integration is not configured. Please set COMPOSIO_API_KEY environment variable.',
+        );
+      }
+
       const authConfig = await this.composio.authConfigs.create(integrationId, {
         type: 'use_custom_auth',
         authScheme: 'API_KEY',
@@ -473,6 +509,12 @@ export class ComposioService {
     this.logger.log(`Setting up global API key auth for ${integrationId}`);
 
     try {
+      if (!this.composio) {
+        throw new Error(
+          'Composio integration is not configured. Please set COMPOSIO_API_KEY environment variable.',
+        );
+      }
+
       // Determine which API key field to use based on integration
       const integrationIdLower = integrationId.toLowerCase();
       const useGenericApiKey =

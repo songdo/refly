@@ -172,19 +172,80 @@ export class CanvasSyncService {
       throw new ParamsError('Canvas ID is required for getState');
     }
 
-    const canvas =
-      canvasPo ??
-      (await this.prisma.canvas.findUnique({
+    // First check if user is the owner
+    let canvas = canvasPo;
+    if (!canvas) {
+      const canvasData = await this.prisma.canvas.findUnique({
         select: {
           version: true,
           stateStorageKey: true,
+          uid: true,
+          isPublic: true,
         },
         where: {
           canvasId,
           uid: user.uid,
           deletedAt: null,
         },
-      }));
+      });
+
+      if (canvasData) {
+        // Convert to CanvasModel type
+        canvas = {
+          ...canvasData,
+          pk: BigInt(0), // Placeholder, not used
+          canvasId,
+          title: '', // Placeholder, not used
+          storageSize: BigInt(0), // Placeholder, not used
+          minimapStorageKey: null,
+          usedToolsets: null,
+          readOnly: false,
+          status: 'ready',
+          visibility: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          workflow: null,
+        } as CanvasModel;
+      }
+    }
+
+    // If user is not the owner, check if canvas is public
+    if (!canvas) {
+      const canvasData = await this.prisma.canvas.findFirst({
+        select: {
+          version: true,
+          stateStorageKey: true,
+          uid: true,
+          isPublic: true,
+        },
+        where: {
+          canvasId,
+          deletedAt: null,
+          isPublic: true,
+        },
+      });
+
+      if (canvasData) {
+        // Convert to CanvasModel type
+        canvas = {
+          ...canvasData,
+          pk: BigInt(0), // Placeholder, not used
+          canvasId,
+          title: '', // Placeholder, not used
+          storageSize: BigInt(0), // Placeholder, not used
+          minimapStorageKey: null,
+          usedToolsets: null,
+          readOnly: false,
+          status: 'ready',
+          visibility: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          workflow: null,
+        } as CanvasModel;
+      }
+    }
 
     if (!canvas) {
       throw new CanvasNotFoundError();
